@@ -1,0 +1,22 @@
+{
+  "name": "dancing-diagrams",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "d3": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^4.4.0",
+    "awesome-typescript-loader": "^3.0.0-beta.17",
+    "lite-server": "^2.2.2",
+    "typescript": "^2.1.4",
+    "webpack": "^2.2.0-rc.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "lite-server"
+  },
+  "author": "",
+  "license": "ISC"
+}

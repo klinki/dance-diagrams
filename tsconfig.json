@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "amd",
+        "target": "es5",
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "allowUnreachableCode": false,
+        "alwaysStrict": true,
+        "strictNullChecks": true
+    }
+}
