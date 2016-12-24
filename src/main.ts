@@ -7,22 +7,6 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-let svg = d3.select('svg');
-let nodes = [
-	{
-		x: 750,
-		y: 500,
-		rotation: 45,
-		leg: Leg.LF
-	},
-	{
-		x: 780,
-		y: 500,
-		rotation: 45,
-		leg: Leg.RF
-	}
-];
-
 function dragStarted(d) {
   d3.select(this).raise().classed("active", true);
 }
@@ -41,79 +25,13 @@ function dragEnded(d) {
   d3.select(this).classed("active", false);
 }
 
-
+let svg = d3.select('svg');
 svg.append('rect')
 	.attr('width', 1000)
 	.attr('height', 1000)
 	.attr('fill', 'transparent')
 	.attr('stroke', 'black')
 	.attr('stroke-opacity', 2);
-
-let selection = svg.selectAll('g.node')
-	.data(nodes);
-
-selection.enter()
-	.append('g')
-	.attr('class', 'node')
-	.attr('transform', (d) => {
-		let rotation = d.leg === Leg.LF ? d.rotation : d.rotation + 10;
-		return `translate(${d.x}, ${d.y}) rotate(${rotation} 12.37 35)`;
-	})
-	.call(d3.drag()
-		.on('start', dragStarted)
-		.on('drag', dragged)
-		.on('end', dragEnded)
-	)
-	.append('image')
-	.attr('xlink:href', (d: any): string => {
-		if (d.leg === Leg.LF) {
-			return './assets/man-shoe-left.svg';
-		} else {
-			return './assets/man-shoe-right.svg';
-		}
-	})
-	.attr('height', 35);
-
-d3.select('#start')
-	.on('click', () => {
-		move(100, 0);
-		//rotate(45);
-		console.log('Button click');
-	});
-
-
-function move(x: number, y: number) {
-		nodes[0].x += x;
-		nodes[0].y += y;
-
-		let selection = svg.selectAll('g.node')
-			.data(nodes);
-
-		let transition = d3.transition('move')
-			.duration(1000);
-
-		selection.transition(transition)
-			.attr('transform', (d: any) => {
-				console.log(d);
-				return `translate(${d.x}, ${d.y})`;
-			});
-}
-
-function rotate(rotation: number) {
-	nodes[0].rotation += rotation;
-
-	let selection = svg.selectAll('g.node')
-		.data(nodes);
-
-	let transition = d3.transition('rotate')
-		.duration(1000);
-
-	selection.transition(transition)
-		.attr('transform', (d: any) => {
-			console.log(d);
-			return `translate(${d.x}, ${d.y}) rotate(${d.rotation})`;
-		});
-}
 
 function waltzNaturalTurn() {
 	return [
@@ -138,12 +56,18 @@ function waltzNaturalTurn() {
 	];
 }
 
+let dancer = new Dancer();
+
 d3.select('#waltz')
 	.on('click', () => {
-		let dancer = new Dancer();
-		
 		dancer.danceSequence(waltzNaturalTurn());
-
 		//waltz();
+		console.log('Button click');
+	});
+
+d3.select('#start')
+	.on('click', () => {
+		dancer.move(100, 0);
+		//rotate(45);
 		console.log('Button click');
 	});
