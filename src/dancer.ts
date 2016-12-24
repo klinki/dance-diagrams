@@ -30,15 +30,16 @@ export class Dancer {
             }
         ];
 
-        this.selection = d3.select('svg').selectAll('g.node');
-
-        let selection = this.selection.data(this.legs);
-        selection.enter()
+        d3.select('svg').selectAll('g.node')
+            .data(this.legs)
+            .enter()
             .append('g')
             .attr('class', 'node')
             .attr('transform', (d) => {
+                let center = this.getCenter(d.leg);
                 let rotation = d.leg === Leg.LF ? d.rotation : d.rotation + 10;
-                return `translate(${d.x}, ${d.y}) rotate(${rotation} 12.37 35)`;
+                return `rotate(${rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
+                //return `translate(${d.x}, ${d.y}) rotate(${rotation} 12.37 35)`;
             })
             .append('image')
             .attr('xlink:href', (d: any): string => {
@@ -49,25 +50,37 @@ export class Dancer {
                 }
             })
             .attr('height', 35);
+
+        this.selection = d3.select('svg').selectAll('g.node');
     }
 
+    protected getCenter(leg: Leg) {
+        let width = 12.87;
+        let height = 35;
+        return { 
+            x: this.legs[leg].x + width / 2,
+            y: this.legs[leg].y - height / 2
+        };
+    }
 
     public danceSequence(steps: StepLikeInterface[]) {
         let i = 0;
+
+        console.log('When sequence started');
+        console.log(this.legs.map((item) => Object.assign({}, item)));
 
         setInterval(() => {
             if (i < steps.length) {
                 let step = steps[i];
 
-                if (step.leg === Leg.LF) {
-                    this.legs[0].x += step.x;
-                    this.legs[0].y += step.y;
-                    this.legs[0].rotation += step.rotation;
-                } else {
-                    this.legs[1].x += step.x;
-                    this.legs[1].y += step.y;
-                    this.legs[1].rotation += step.rotation;
-                }
+                this.legs = this.legs.map((item) => Object.assign({}, item));
+
+                this.legs[step.leg].x += step.x;
+                this.legs[step.leg].y += step.y;
+                this.legs[step.leg].rotation += step.rotation;
+
+                console.log(`After ${i + 1} steps`);
+                console.log(this.legs);
 
                 let selection = this.selection.data(this.legs);
 
@@ -77,12 +90,13 @@ export class Dancer {
                 selection.transition(transition)
                     .attr('transform', (d: any) => {
                         console.log(d);
-                        return `translate(${d.x}, ${d.y}) rotate(${d.rotation})`;
+                        let center = this.getCenter(d.leg);
+                        return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
                     });
             }
 
             i++;
-        }, 1020);
+        }, 1000);
     }
 
     public move(x: number, y: number) {

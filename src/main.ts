@@ -38,7 +38,7 @@ function waltzNaturalTurn() {
 		{
 			leg: Leg.RF,
 			x: 50,
-			y: -50,
+			y: -50, // 70.7px movement
 			rotation: 0
 		},
 		{
@@ -48,9 +48,21 @@ function waltzNaturalTurn() {
 			rotation: 90
 		},
 		{
+			leg: Leg.LF,
+			x: 0,
+			y: 0,
+			rotation: 45
+		},
+		{
 			leg: Leg.RF,
-			x: 25,
-			y: -20,
+			x: 55,
+			y: -25,
+			rotation: 135
+		},
+		{
+			leg: Leg.LF,
+			x: 55,
+			y: -25,
 			rotation: 135
 		}
 	];
