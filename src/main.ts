@@ -1,8 +1,9 @@
 import * as d3 from 'd3';
 import {scaleLinear} from 'd3-scale';
 import {Leg} from './steps';
+import {Dancer} from './dancer';
 
-function sleep(ms) {
+function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -114,9 +115,8 @@ function rotate(rotation: number) {
 		});
 }
 
-async function waltz() {
-
-	let steps = [
+function waltzNaturalTurn() {
+	return [
 		{
 			leg: Leg.RF,
 			x: 50,
@@ -136,43 +136,14 @@ async function waltz() {
 			rotation: 135
 		}
 	];
-
-	let i = 0;
-
-	setInterval(() => {
-		if (i < steps.length) {
-			let step = steps[i];
-
-			if (step.leg === Leg.LF) {
-				nodes[0].x += step.x;
-				nodes[0].y += step.y;
-				nodes[0].rotation += step.rotation;
-			} else {
-				nodes[1].x += step.x;
-				nodes[1].y += step.y;
-				nodes[1].rotation += step.rotation;
-			}
-
-			let selection = svg.selectAll('g.node')
-				.data(nodes);
-
-			let transition = d3.transition('move')
-				.duration(1000);
-
-			selection.transition(transition)
-				.attr('transform', (d: any) => {
-					console.log(d);
-					return `translate(${d.x}, ${d.y}) rotate(${d.rotation})`;
-				});
-		}
-
-		i++;
-	}, 1000);
-
 }
 
 d3.select('#waltz')
 	.on('click', () => {
-		waltz();
+		let dancer = new Dancer();
+		
+		dancer.danceSequence(waltzNaturalTurn());
+
+		//waltz();
 		console.log('Button click');
 	});
