@@ -35,13 +35,13 @@ svg.append('rect')
 
 function waltzNaturalTurn() {
 	return [
-		{
+		[{
 			leg: Leg.RF,
 			x: 50,
 			y: -50, // 70.7px movement
 			rotation: 0
-		},
-		{
+		}],
+		[{
 			leg: Leg.LF,
 			x: 150,
 			y: -75,
@@ -52,19 +52,19 @@ function waltzNaturalTurn() {
 			x: 0,
 			y: 0,
 			rotation: 45
-		},
-		{
+		}],
+		[{
 			leg: Leg.RF,
 			x: 55,
 			y: -25,
 			rotation: 135
-		},
-		{
+		}],
+		[{
 			leg: Leg.LF,
 			x: 55,
 			y: -25,
 			rotation: 135
-		}
+		}]
 	];
 }
 

@@ -63,36 +63,36 @@ export class Dancer {
         };
     }
 
-    public danceSequence(steps: StepLikeInterface[]) {
+    public danceSequence(stepsSequence: StepLikeInterface[][]) {
         let i = 0;
 
         console.log('When sequence started');
         console.log(this.legs.map((item) => Object.assign({}, item)));
 
         setInterval(() => {
-            if (i < steps.length) {
-                let step = steps[i];
+            if (i < stepsSequence.length) {
+                stepsSequence[i].forEach(step => {
+                    this.legs = this.legs.map((item) => Object.assign({}, item));
 
-                this.legs = this.legs.map((item) => Object.assign({}, item));
+                    this.legs[step.leg].x += step.x;
+                    this.legs[step.leg].y += step.y;
+                    this.legs[step.leg].rotation += step.rotation;
 
-                this.legs[step.leg].x += step.x;
-                this.legs[step.leg].y += step.y;
-                this.legs[step.leg].rotation += step.rotation;
+                    console.log(`After ${i + 1} steps`);
+                    console.log(this.legs);
 
-                console.log(`After ${i + 1} steps`);
-                console.log(this.legs);
+                    let selection = this.selection.data(this.legs);
 
-                let selection = this.selection.data(this.legs);
+                    let transition = d3.transition('move')
+                        .duration(1000);
 
-                let transition = d3.transition('move')
-                    .duration(1000);
-
-                selection.transition(transition)
-                    .attr('transform', (d: any) => {
-                        console.log(d);
-                        let center = this.getCenter(d.leg);
-                        return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
-                    });
+                    selection.transition(transition)
+                        .attr('transform', (d: any) => {
+                            console.log(d);
+                            let center = this.getCenter(d.leg);
+                            return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
+                        });
+                    })
             }
 
             i++;
