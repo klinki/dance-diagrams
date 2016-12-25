@@ -26,6 +26,13 @@ export enum Direction {
 	BDC // backing center
 }
 
+export enum Wall {
+	TOP,
+	LEFT,
+	BOTTOM,
+	RIGHT
+}
+
 export enum Timing {
 	S,
 	Q,
@@ -51,6 +58,11 @@ export enum StepSize {
 	Small,
 	Normal,
 	Big
+}
+
+export interface Point {
+	x: number,
+	y: number
 }
 
 /*

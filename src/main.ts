@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {scaleLinear} from 'd3-scale';
-import {Leg} from './steps';
+import {Leg, Direction, Wall, Point} from './steps';
 import {Dancer} from './dancer';
 
 function sleep(ms: number) {
@@ -45,13 +45,13 @@ function waltzNaturalTurn() {
 			leg: Leg.LF,
 			x: 150,
 			y: -75,
-			rotation: 90
+			rotation: 0
 		},
 		{
 			leg: Leg.LF,
 			x: 0,
 			y: 0,
-			rotation: 45
+			rotation: 135
 		}],
 		[{
 			leg: Leg.RF,
@@ -59,16 +59,17 @@ function waltzNaturalTurn() {
 			y: -25,
 			rotation: 135
 		}],
-		[{
+	/*	[{
 			leg: Leg.LF,
 			x: 55,
 			y: -25,
 			rotation: 135
-		}]
+		}] */
 	];
 }
 
 let dancer = new Dancer();
+dancer.setPosition({x: 750, y: 500}, Direction.DW, Wall.RIGHT);
 
 d3.select('#waltz')
 	.on('click', () => {

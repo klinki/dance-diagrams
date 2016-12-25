@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {scaleLinear} from 'd3-scale';
-import {Leg} from './steps';
+import {Leg, Direction, Wall, Point} from './steps';
 
 export interface StepLikeInterface {
     leg: Leg;
@@ -14,21 +14,11 @@ export class Dancer {
     protected legs: StepLikeInterface[] = [];
     protected selection: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>;
 
+    protected direction: Direction;
+    protected wall: Wall;
+
     public constructor() {
-        this.legs = [
-           {
-                x: 750,
-                y: 500,
-                rotation: 45,
-                leg: Leg.LF
-            },
-            {
-                x: 780,
-                y: 500,
-                rotation: 45,
-                leg: Leg.RF
-            }
-        ];
+        this.setPosition({x: 750, y: 500}, Direction.DW, Wall.RIGHT, 30);
 
         d3.select('svg').selectAll('g.node')
             .data(this.legs)
@@ -63,6 +53,61 @@ export class Dancer {
         };
     }
 
+    public setPosition(position: Point, direction: Direction, facingWall: Wall, distance: number = 30) {
+        let rotation = this.wallRotationCorrection(facingWall, this.getDirectionRotation(direction));
+
+        this.legs = [
+           {
+                x: position.x,
+                y: position.y,
+                rotation: rotation,
+                leg: Leg.LF
+            },
+            {
+                x: position.x + distance,
+                y: position.y,
+                rotation: rotation,
+                leg: Leg.RF
+            }
+        ];
+    }
+
+    public setAlignment(direction: Direction, wall?: Wall) {
+        if (!wall) {
+            wall = this.wall;    
+        }
+
+        let rotation = this.wallRotationCorrection(wall, this.getDirectionRotation(direction));
+        
+        this.legs[Leg.LF].rotation = rotation;
+        this.legs[Leg.RF].rotation = rotation;
+    }
+
+    protected getDirectionRotation(direction: Direction) {
+        let directionRotation: {[key: number]: number} = {};
+        directionRotation[Direction.FW] = 90;
+        directionRotation[Direction.DW] = 45;
+        directionRotation[Direction.LOD] = 0;
+        directionRotation[Direction.FDC] = -40;
+        directionRotation[Direction.FC] = -90;
+        directionRotation[Direction.BDW] = 135;
+        directionRotation[Direction.BLOD] = 180;
+        directionRotation[Direction.BDC] = -135;
+
+        return directionRotation[direction];
+    }
+
+    protected wallRotationCorrection(wall: Wall, rotation: number) {
+        let wallCorrections: {[key: number]: number} = {
+            0: -90,
+            1: 180,
+            2: 90,
+            3: 0
+        };
+
+        return wallCorrections[wall] + rotation;
+    }
+
     public danceSequence(stepsSequence: StepLikeInterface[][]) {
         let i = 0;
 
@@ -92,7 +137,8 @@ export class Dancer {
                             let center = this.getCenter(d.leg);
                             return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
                         });
-                    })
+                    
+                    });
             }
 
             i++;
