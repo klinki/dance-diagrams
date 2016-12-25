@@ -114,7 +114,7 @@ export class Dancer {
         console.log('When sequence started');
         console.log(this.legs.map((item) => Object.assign({}, item)));
 
-        setInterval(() => {
+        let interval = setInterval(() => {
             if (i < stepsSequence.length) {
                 stepsSequence[i].forEach(step => {
                     this.legs = this.legs.map((item) => Object.assign({}, item));
@@ -139,6 +139,8 @@ export class Dancer {
                         });
                     
                     });
+            } else {
+                clearInterval(interval);
             }
 
             i++;
