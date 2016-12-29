@@ -55,6 +55,8 @@ export class Dancer {
 
     public setPosition(position: Point, direction: Direction, facingWall: Wall, distance: number = 30) {
         let rotation = this.wallRotationCorrection(facingWall, this.getDirectionRotation(direction));
+        this.wall = facingWall;
+        this.direction = direction;
 
         this.legs = [
            {
@@ -81,8 +83,21 @@ export class Dancer {
         
         this.legs[Leg.LF].rotation = rotation;
         this.legs[Leg.RF].rotation = rotation;
+
+        this.draw();
     }
 
+    protected draw() {
+        let selection = this.selection.data(this.legs);
+
+        selection.attr('transform', (d: any) => {
+            let center = this.getCenter(d.leg);
+            return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
+        });
+    }
+
+
+    // relative to wall
     protected getDirectionRotation(direction: Direction) {
         let directionRotation: {[key: number]: number} = {};
         directionRotation[Direction.FW] = 90;
@@ -90,9 +105,9 @@ export class Dancer {
         directionRotation[Direction.LOD] = 0;
         directionRotation[Direction.FDC] = -40;
         directionRotation[Direction.FC] = -90;
-        directionRotation[Direction.BDW] = 135;
+        directionRotation[Direction.BDW] = -135;
         directionRotation[Direction.BLOD] = 180;
-        directionRotation[Direction.BDC] = -135;
+        directionRotation[Direction.BDC] = 135;
 
         return directionRotation[direction];
     }
@@ -106,6 +121,23 @@ export class Dancer {
         };
 
         return wallCorrections[wall] + rotation;
+    }
+
+    public getStepCoordinates(stepSize: number, rotation?: number) {
+/*
+        let oldRotation = this.getDirectionRotation(this.direction);
+        let newRotation = this.getDirectionRotation(direction);
+        let rotation = this.wallRotationCorrection(this.wall, oldRotation - newRotation);
+*/
+
+
+        let angleInDegrees = this.wallRotationCorrection(this.wall, this.getDirectionRotation(this.direction));
+        let angleInRadians = (angleInDegrees * Math.PI) / 180;
+        let coordinates = {
+            x: stepSize * Math.sin(angleInRadians),
+            y: stepSize * Math.cos(angleInRadians)
+        };
+        return coordinates;
     }
 
     public danceSequence(stepsSequence: StepLikeInterface[][]) {

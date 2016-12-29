@@ -71,6 +71,9 @@ function waltzNaturalTurn() {
 let dancer = new Dancer();
 dancer.setPosition({x: 750, y: 500}, Direction.DW, Wall.RIGHT);
 
+let coordinates = dancer.getStepCoordinates(Direction.FW, 70);
+console.log(coordinates);
+
 d3.select('#waltz')
 	.on('click', () => {
 		dancer.danceSequence(waltzNaturalTurn());
@@ -83,4 +86,23 @@ d3.select('#start')
 		dancer.move(100, 0);
 		//rotate(45);
 		console.log('Button click');
+	});
+
+let directions: any = [];
+directions[Direction.FW] = { name: 'Facing wall', value: Direction.FW };
+directions[Direction.DW] = { name: 'Diagonal wall', value: Direction.DW };
+directions[Direction.LOD] = { name: 'Line of dance', value: Direction.LOD };
+directions[Direction.FDC] = { name: 'Facing diagonal center', value: Direction.FDC };
+directions[Direction.FC] = { name: 'Facing center', value: Direction.FC };
+directions[Direction.BDW] = { name: 'Backing diagonal wall', value: Direction.BDW };
+directions[Direction.BLOD] = { name: 'Backing line of dance', value: Direction.BLOD };
+directions[Direction.BDC] = { name: 'Backing diagonal center', value: Direction.BDC };
+
+let positionsSelection = d3.select('#positions').selectAll('li')
+	.data(directions)
+	.enter()
+	.append('li')
+	.text((item: any) => item.name)
+	.on('click', (item: any) => {
+		dancer.setAlignment(item.value);
 	});
