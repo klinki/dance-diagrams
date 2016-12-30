@@ -11,6 +11,8 @@ export interface StepLikeInterface {
 
 
 export class Dancer {
+    protected static COUNT_INSTANCES = 0;
+    protected id: number;
     protected legs: StepLikeInterface[] = [];
     protected selection: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>;
 
@@ -18,13 +20,16 @@ export class Dancer {
     protected wall: Wall;
 
     public constructor() {
+        this.id = ++Dancer.COUNT_INSTANCES;
         this.setPosition({x: 750, y: 500}, Direction.DW, Wall.RIGHT, 30);
+        
+        let cssClass = `dancer-${this.id}`;
 
-        d3.select('svg').selectAll('g.node')
+        d3.select('svg').selectAll(`g.${cssClass}`)
             .data(this.legs)
             .enter()
             .append('g')
-            .attr('class', 'node')
+            .attr('class', cssClass)
             .attr('transform', (d) => {
                 let center = this.getCenter(d.leg);
                 let rotation = d.leg === Leg.LF ? d.rotation : d.rotation + 10;
@@ -41,7 +46,7 @@ export class Dancer {
             })
             .attr('height', 35);
 
-        this.selection = d3.select('svg').selectAll('g.node');
+        this.selection = d3.select('svg').selectAll(`g.${cssClass}`);
     }
 
     protected getCenter(leg: Leg) {
@@ -51,6 +56,16 @@ export class Dancer {
             x: this.legs[leg].x + width / 2,
             y: this.legs[leg].y - height / 2
         };
+    }
+
+    protected getBothLegsCenter(spaceBetweenLegs = 30) {
+        let legWidth = 12.87;
+        let legHeight = 35;
+        
+        return {
+            x: (this.legs[Leg.LF].x + legWidth * 2 + spaceBetweenLegs) / 2,
+            y: this.legs[Leg.LF].y - legHeight / 2
+        }
     }
 
     public setPosition(position: Point, direction: Direction, facingWall: Wall, distance: number = 30) {
@@ -85,6 +100,15 @@ export class Dancer {
         this.legs[Leg.RF].rotation = rotation;
 
         this.draw();
+    }
+
+    public drawCommonCenter() {
+        let selection = this.selection.data(this.legs);
+
+        selection.attr('transform', (d: any) => {
+            let center = this.getBothLegsCenter();
+            return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
+        });
     }
 
     protected draw() {

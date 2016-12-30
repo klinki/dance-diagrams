@@ -71,6 +71,10 @@ function waltzNaturalTurn() {
 let dancer = new Dancer();
 dancer.setPosition({x: 750, y: 500}, Direction.DW, Wall.RIGHT);
 
+let anotherDancer = new Dancer();
+anotherDancer.setPosition({x: 100, y: 100}, Direction.DW, Wall.LEFT, 15);
+anotherDancer.setAlignment(Direction.DW);
+
 let coordinates = dancer.getStepCoordinates(Direction.FW, 70);
 console.log(coordinates);
 
@@ -105,4 +109,6 @@ let positionsSelection = d3.select('#positions').selectAll('li')
 	.text((item: any) => item.name)
 	.on('click', (item: any) => {
 		dancer.setAlignment(item.value);
+		anotherDancer.setAlignment(item.value);
+		anotherDancer.drawCommonCenter();
 	});
