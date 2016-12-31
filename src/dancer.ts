@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {scaleLinear} from 'd3-scale';
-import {Leg, Direction, Wall, Point} from './steps';
+import {Leg, Direction, Wall, Point, StepDirection} from './steps';
 
 export interface StepLikeInterface {
     leg: Leg;
@@ -63,7 +63,7 @@ export class Dancer {
         let legHeight = 35;
         
         return {
-            x: (this.legs[Leg.LF].x + legWidth * 2 + spaceBetweenLegs) / 2,
+            x: this.legs[Leg.LF].x + (legWidth * 2 + spaceBetweenLegs) / 2,
             y: this.legs[Leg.LF].y - legHeight / 2
         }
     }
@@ -93,6 +93,8 @@ export class Dancer {
         if (!wall) {
             wall = this.wall;    
         }
+
+        this.direction = direction;
 
         let rotation = this.wallRotationCorrection(wall, this.getDirectionRotation(direction));
         
@@ -153,14 +155,16 @@ export class Dancer {
         let newRotation = this.getDirectionRotation(direction);
         let rotation = this.wallRotationCorrection(this.wall, oldRotation - newRotation);
 */
-
-
-        let angleInDegrees = this.wallRotationCorrection(this.wall, this.getDirectionRotation(this.direction));
+        let directionRotation = this.getDirectionRotation(this.direction);
+//         let angleInDegrees = this.wallRotationCorrection(this.wall, rotation ? rotation : 0);
+        let angleInDegrees = rotation; //this.legs[Leg.LF].rotation - rotation; 
+        // this.wallRotationCorrection(this.wall, rotation ? rotation : 0);
         let angleInRadians = (angleInDegrees * Math.PI) / 180;
         let coordinates = {
-            x: stepSize * Math.sin(angleInRadians),
-            y: stepSize * Math.cos(angleInRadians)
+            x: stepSize * Math.cos(angleInRadians),
+            y: stepSize * Math.sin(angleInRadians)
         };
+
         return coordinates;
     }
 
@@ -177,6 +181,57 @@ export class Dancer {
 
                     this.legs[step.leg].x += step.x;
                     this.legs[step.leg].y += step.y;
+                    this.legs[step.leg].rotation += step.rotation;
+
+                    console.log(`After ${i + 1} steps`);
+                    console.log(this.legs);
+
+                    let selection = this.selection.data(this.legs);
+
+                    let transition = d3.transition('move')
+                        .duration(1000);
+
+                    selection.transition(transition)
+                        .attr('transform', (d: any) => {
+                            console.log(d);
+                            let center = this.getCenter(d.leg);
+                            return `rotate(${d.rotation} ${center.x} ${center.y}) translate(${d.x}, ${d.y})`;
+                        });
+                    
+                    });
+            } else {
+                clearInterval(interval);
+            }
+
+            i++;
+        }, 1000);
+    }
+
+    protected getStepRotation(direction: StepDirection) {
+        let stepRotations: number[] = [];
+        stepRotations[StepDirection.FW] = 0;
+        stepRotations[StepDirection.BW] = 180;
+        stepRotations[StepDirection.LT] = 90;
+        stepRotations[StepDirection.RT] = -90;
+
+        return stepRotations[direction];
+    }
+
+    public danceSequenceRelative(stepsSequence: any[][]) {
+        let i = 0;
+
+        console.log('When sequence started');
+        console.log(this.legs.map((item) => Object.assign({}, item)));
+
+        let interval = setInterval(() => {
+            if (i < stepsSequence.length) {
+                stepsSequence[i].forEach(step => {
+                    this.legs = this.legs.map((item) => Object.assign({}, item));
+
+                    let coordinates = this.getStepCoordinates(step.size, this.getStepRotation(step.direction));
+
+                    this.legs[step.leg].x += coordinates.x;
+                    this.legs[step.leg].y += coordinates.y;
                     this.legs[step.leg].rotation += step.rotation;
 
                     console.log(`After ${i + 1} steps`);
@@ -232,7 +287,7 @@ export class Dancer {
         selection.transition(transition)
             .attr('transform', (d: any) => {
                 console.log(d);
-                return `translate(${d.x}, ${d.y}) rotate(${d.rotation})`;
+                return `rotate(${d.rotation}) translate(${d.x}, ${d.y})`;
             });
     }
 }

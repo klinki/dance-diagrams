@@ -45,6 +45,22 @@ export enum Sway {
 	L
 }
 
+export enum StepDirection {
+	FW = 1, // forward
+	BW, // backward
+	LT, // left
+	RT // right
+}
+
+export enum Rotation {
+	Full = 360,
+	ThreeQuarter = 270,
+	Half = 180,
+	Quarter = 90,
+	Eight = 45,
+	ThreeEight = 135
+}
+
 // Step is always transition from one position to another
 export interface Step {
 	timing: Timing;
